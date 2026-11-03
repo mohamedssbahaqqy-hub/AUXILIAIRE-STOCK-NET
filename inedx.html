@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AUXILIAIRE - Gestion de Stock</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="top">
+  <h1>📦 AUXILIAIRE – Gestion de Stock</h1>
+  <p>Suivi des sorties · Entrées · Inventaire mensuel</p>
+</header>
+
+<main class="wrap">
+
+  <div class="stats">
+    <div class="stat">
+      <small>Références</small>
+      <b id="sRefs">72</b>
+    </div>
+    <div class="stat">
+      <small>Stock total</small>
+      <b id="sQty">—</b>
+    </div>
+    <div class="stat">
+      <small>Stock zéro</small>
+      <b id="sZero">—</b>
+    </div>
+  </div>
+
+  <nav class="tabs no-print">
+    <button class="tab active" data-tab="stock">Stock</button>
+    <button class="tab" data-tab="move">Mouvement</button>
+    <button class="tab" data-tab="history">Historique</button>
+    <button class="tab" data-tab="report">Inventaire</button>
+    <button class="tab" data-tab="settings">Paramètres</button>
+  </nav>
+
+  <!-- STOCK -->
+  <section id="stock" class="page">
+    <div class="panel">
+      <div class="row mobilecol">
+        <div class="field">
+          <label>Recherche</label>
+          <input id="search" placeholder="Code ou désignation...">
+        </div>
+        <div class="field">
+          <label>Famille</label>
+          <select id="category">
+            <option value="">Toutes les familles</option>
+          </select>
+        </div>
+      </div>
+      <div id="stockCount" class="muted"></div>
+    </div>
+
+    <div class="panel tablewrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Code produit</th>
+            <th>Famille</th>
+            <th>Désignation</th>
+            <th>Stock</th>
+            <th>Unité</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody id="stockBody"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- MOUVEMENT -->
+  <section id="move" class="page hide">
+    <div class="panel">
+      <h2>Enregistrer un mouvement</h2>
+
+      <div class="field">
+        <label>Type de mouvement</label>
+        <select id="mType">
+          <option value="OUT">Sortie – Consommation</option>
+          <option value="IN">Entrée – Réception</option>
+          <option value="ADJ">Correction / Inventaire</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label>Produit</label>
+        <select id="mProduct"></select>
+      </div>
+
+      <div class="row mobilecol">
+        <div class="field">
+          <label>Quantité</label>
+          <input id="mQty" type="number" min="0.001" step="0.001">
+        </div>
+
+        <div class="field">
+          <label>Magasinier</label>
+          <input id="mUser" placeholder="Nom">
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Projet / Ligne</label>
+        <input id="mProject" placeholder="V163 WD, V136...">
+      </div>
+
+      <div class="field">
+        <label>Note</label>
+        <input id="mNote" placeholder="Commentaire facultatif">
+      </div>
+
+      <button class="btn green" id="saveMove">
+        Valider le mouvement
+      </button>
+
+      <div class="notice">
+        Une sortie ne peut pas dépasser le stock disponible.
+        La correction remplace le stock par la quantité physique comptée.
+      </div>
+    </div>
+  </section>
+
+  <!-- HISTORIQUE -->
+  <section id="history" class="page hide">
+    <div class="panel">
+      <h2>Historique des mouvements</h2>
+
+      <div class="row mobilecol">
+        <div class="field">
+          <label>Mois</label>
+          <input type="month" id="histMonth">
+        </div>
+
+        <div class="field">
+          <label>Type</label>
+          <select id="histType">
+            <option value="">Tous</option>
+            <option value="OUT">Sorties</option>
+            <option value="IN">Entrées</option>
+            <option value="ADJ">Corrections</option>
+          </select>
+        </div>
+      </div>
+
+      <button class="btn gray no-print" id="exportHistory">
+        Exporter historique CSV
+      </button>
+    </div>
+
+    <div class="panel tablewrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Type</th>
+            <th>Produit</th>
+            <th>Quantité</th>
+            <th>Magasinier</th>
+            <th>Projet</th>
+            <th>Note</th>
+          </tr>
+        </thead>
+        <tbody id="historyBody"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- INVENTAIRE -->
+  <section id="report" class="page hide">
+    <div class="panel">
+      <h2>Inventaire mensuel</h2>
+
+      <div class="field">
+        <label>Mois à analyser</label>
+        <input type="month" id="reportMonth">
+      </div>
+
+      <div class="row">
+        <div class="stat">
+          <small>Entrées</small>
+          <b id="rIn">0</b>
+        </div>
+        <div class="stat">
+          <small>Sorties</small>
+          <b id="rOut">0</b>
+        </div>
+        <div class="stat">
+          <small>Corrections</small>
+          <b id="rAdj">0</b>
+        </div>
+      </div>
+
+      <p class="muted">
+        Stock actuel et mouvements du mois sélectionné.
+      </p>
+
+      <div class="actions no-print">
+        <button class="btn" id="exportReport">
+          Télécharger inventaire CSV
+        </button>
+        <button class="btn gray" onclick="window.print()">
+          Imprimer
+        </button>
+      </div>
+    </div>
+
+    <div class="panel tablewrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Code</th>
+            <th>Désignation</th>
+            <th>Stock actuel</th>
+            <th>Entrées</th>
+            <th>Sorties</th>
+            <th>Unité</th>
+          </tr>
+        </thead>
+        <tbody id="reportBody"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- PARAMETRES -->
+  <section id="settings" class="page hide">
+    <div class="panel">
+      <h2>Paramètres et sauvegarde</h2>
+
+      <div class="field">
+        <label>Nom du magasinier</label>
+        <input id="defaultUser" placeholder="Nom">
+      </div>
+
+      <button class="btn" id="saveSettings">Enregistrer</button>
+
+      <hr>
+
+      <p class="muted">
+        Les données sont sauvegardées dans le navigateur.
+        Faites régulièrement une sauvegarde.
+      </p>
+
+      <button class="btn gray" id="backup">
+        Exporter sauvegarde JSON
+      </button>
+
+      <div class="field">
+        <label>Restaurer une sauvegarde JSON</label>
+        <input type="file" id="restoreFile" accept=".json">
+      </div>
+
+      <button class="btn red" id="reset">
+        Réinitialiser les données
+      </button>
+    </div>
+  </section>
+
+  <div class="footer">
+    AUXILIAIRE STOCK – Gestion de magasin
+  </div>
+
+</main>
+
+<script src="data.js"></script>
+<script src="app.js"></script>
+
+</body>
+</html>
